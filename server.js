@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const path = require('path');
+const user = require("./app/controllers/userController");
 
 const app = express();
 
@@ -9,12 +11,11 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 
-// parse requests of content-type - application/json
 app.use(express.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
+app.use(express.static(path.join(__dirname, 'Yours-prior_prototype'))) 
 const db = require("./app/models");
 db.mongoose
   .connect(db.url, {
@@ -31,10 +32,11 @@ db.mongoose
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
+  res.sendFile(path.join(__dirname, '/Yours-prior_prototype/countdown.html'));
 });
 
-require("./app/routes/turorial.routes")(app);
+app.post("/signup", user.create);
+require("./app/routes/user.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
